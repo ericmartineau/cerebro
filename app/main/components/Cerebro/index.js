@@ -6,6 +6,8 @@ import { bindActionCreators } from 'redux'
 import { clipboard, remote } from 'electron'
 import { focusableSelector } from 'cerebro-ui'
 import escapeStringRegexp from 'escape-string-regexp'
+import {AppBar, Toolbar, Input} from 'material-ui'
+
 
 import debounce from 'lodash/debounce'
 
@@ -70,7 +72,7 @@ const focusPreview = () => {
  *
  * @param  {DOMElement} input
  */
-const cursorInEndOfInut = ({ selectionStart, selectionEnd, value }) => (
+const cursorInEndOfInput = ({ selectionStart, selectionEnd, value }) => (
   selectionStart === selectionEnd && selectionStart >= value.length
 )
 
@@ -87,7 +89,7 @@ class Cerebro extends Component {
 
     this.onWindowResize = debounce(this.onWindowResize, 100).bind(this)
 
-    this.updateElectronWindow = debounce(this.updateElectronWindow, 16).bind(this)
+    this.updateElectronWindow = debounce(this.updateElectronWindow, 100).bind(this)
 
     this.onDocumentKeydown = this.onDocumentKeydown.bind(this)
     this.onKeyDown = this.onKeyDown.bind(this)
@@ -96,7 +98,6 @@ class Cerebro extends Component {
     this.cleanup = this.cleanup.bind(this)
     this.focusMainInput = this.focusMainInput.bind(this)
     this.selectItem = this.selectItem.bind(this)
-
 
     this.state = {
       mainInputFocused: false
@@ -169,7 +170,7 @@ class Cerebro extends Component {
         this.selectCurrent(event)
       },
       arrowRight: () => {
-        if (cursorInEndOfInut(event.target)) {
+        if (cursorInEndOfInput(event.target)) {
           if (this.autocompleteValue()) {
             // Autocomplete by arrow right only if autocomple value is shown
             this.autocomplete(event)
@@ -365,16 +366,20 @@ class Cerebro extends Component {
     return (
       <div className={styles.search}>
         {this.renderAutocomplete()}
-        <div className={styles.inputWrapper}>
+
           <MainInput
-            value={this.props.term}
-            ref="mainInput"
-            onChange={this.props.actions.updateTerm}
-            onKeyDown={this.onKeyDown}
-            onFocus={this.onMainInputFocus}
-            onBlur={this.onMainInputBlur}
+              value={this.props.term}
+              ref="mainInput"
+              onChange={this.props.actions.updateTerm}
+              onKeyDown={this.onKeyDown}
+              onFocus={this.onMainInputFocus}
+              onBlur={this.onMainInputBlur}
           />
-        </div>
+
+          {/*<div className={styles.inputWrapper}>*/}
+
+          {/*</div>*/}
+
         <ResultsList
           results={this.props.results}
           selected={this.props.selected}

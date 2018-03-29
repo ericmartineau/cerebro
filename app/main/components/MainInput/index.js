@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import styles from './styles.css'
+import SearchBar from 'material-ui-search-bar'
 
 class MainInput extends Component {
   focus() {
@@ -7,13 +8,14 @@ class MainInput extends Component {
   }
   render() {
     return (
-      <input
+      <SearchBar
         placeholder="Cerebro Search"
+        fullWidth="true"
         type="text"
         id="main-input"
         ref="input"
         value={this.props.value}
-        className={styles.input}
+        // className={styles.input}
         onChange={e => this.props.onChange(e.target.value)}
         onKeyDown={this.props.onKeyDown}
         onFocus={this.props.onFocus}

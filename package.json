@@ -197,6 +197,8 @@
     "escape-string-regexp": "1.0.5",
     "fix-path": "2.1.0",
     "lodash": "^4.17.4",
+    "material-ui": "^1.0.0-beta.39",
+    "material-ui-search-bar": "^1.0.0-beta.4",
     "mv": "^2.1.1",
     "node-machine-id": "^1.1.8",
     "normalize.css": "^7.0.0",
@@ -210,6 +212,7 @@
     "react-redux": "^5.0.5",
     "react-virtualized": "https://registry.npmjs.org/react-virtualized/-/react-virtualized-7.11.8.tgz",
     "redux": "^3.7.1",
+    "redux-debounce-thunk": "^1.0.1",
     "redux-thunk": "^2.2.0",
     "source-map-support": "^0.4.15",
     "tar-fs": "1.15.0"

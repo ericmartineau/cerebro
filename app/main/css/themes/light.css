@@ -21,7 +21,7 @@
   --selected-result-background: rgba(18, 110, 219, 1);
 
   /* inputs */
-  --preview-input-background: white;
+  --preview-input-background: #ccc;
   --preview-input-color: var(--main-font-color);
   --preview-input-border: 1px solid #ccc;
 
