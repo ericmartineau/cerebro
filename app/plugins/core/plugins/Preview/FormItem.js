@@ -1,5 +1,7 @@
-import React, { PropTypes } from 'react'
-import { Select, Text, Checkbox } from 'cerebro-ui/Form'
+import React from 'react'
+import PropTypes from 'prop-types'
+
+import { Select, Input, Checkbox } from 'material-ui'
 
 const components = {
   bool: Checkbox,
@@ -7,7 +9,7 @@ const components = {
 }
 
 const FormItem = ({ type, ...props }) => {
-  const Component = components[type] || Text
+  const Component = components[type] || Input
 
   return (
     <Component type={type} {...props} />

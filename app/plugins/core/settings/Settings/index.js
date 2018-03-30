@@ -1,9 +1,12 @@
-import React, { PropTypes, Component } from 'react'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+
+import { InputLabel } from 'material-ui'
+import { FormControl, FormHelperText } from 'material-ui/Form'
 import Hotkey from './Hotkey'
 import countries from './countries'
-import { Select, Checkbox, Wrapper } from 'cerebro-ui/Form'
+
 import loadThemes from 'lib/loadThemes'
-import styles from './styles.css'
 
 class Settings extends Component {
   constructor(props) {
@@ -30,63 +33,18 @@ class Settings extends Component {
     })
   }
   render() {
-    const {
-      hotkey, showInTray, country, theme, developerMode, cleanOnHide, openAtLogin,
-      trackingEnabled, crashreportingEnabled
-    } = this.state
+    const { hotkey, showInTray, country, theme, developerMode, cleanOnHide, openAtLogin,
+      trackingEnabled, crashreportingEnabled } = this.state
 
     return (
-      <div className={styles.settings}>
-        <Wrapper label="Hotkey" description="Type your global shortcut for Cerebro in this input">
-          <Hotkey
-            hotkey={hotkey}
-            onChange={(key) => this.changeConfig('hotkey', key)}
-          />
-        </Wrapper>
-        <Select
-          label="Country"
-          description="Choose your country so Cerebro can better choose currency, language, etc."
-          value={country}
-          options={countries}
-          onChange={value => this.changeConfig('country', value)}
+
+        <Hotkey
+          hotkey={hotkey}
+          helperText="Type your global shortcut for Cerebro in this input"
+          label="Hotkey"
+          onChange={key => this.changeConfig('hotkey', key)}
         />
-        <Select
-          label="Theme"
-          value={theme}
-          options={loadThemes()}
-          onChange={value => this.changeConfig('theme', value)}
-        />
-        <Checkbox
-          label="Open at login"
-          value={openAtLogin}
-          onChange={value => this.changeConfig('openAtLogin', value)}
-        />
-        <Checkbox
-          label="Show in menu bar"
-          value={showInTray}
-          onChange={value => this.changeConfig('showInTray', value)}
-        />
-        <Checkbox
-          label="Developer Mode"
-          value={developerMode}
-          onChange={value => this.changeConfig('developerMode', value)}
-        />
-        <Checkbox
-          label="Clean results on hide"
-          value={cleanOnHide}
-          onChange={value => this.changeConfig('cleanOnHide', value)}
-        />
-        <Checkbox
-          label="Send anonymous statistics (requires restart)"
-          value={trackingEnabled}
-          onChange={value => this.changeConfig('trackingEnabled', value)}
-        />
-        <Checkbox
-          label="Send automatic crash reports (requires restart)"
-          value={crashreportingEnabled}
-          onChange={value => this.changeConfig('crashreportingEnabled', value)}
-        />
-      </div>
+
     )
   }
 }

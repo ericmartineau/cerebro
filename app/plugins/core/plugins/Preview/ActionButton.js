@@ -1,4 +1,6 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
+
 import { KeyboardNavItem } from 'cerebro-ui'
 
 const ActionButton = ({ action, onComplete, text }) => {

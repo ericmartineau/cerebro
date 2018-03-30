@@ -1,5 +1,6 @@
-import React, { PropTypes, Component } from 'react'
-import styles from './styles.css'
+import React, {Component} from 'react'
+import PropTypes from 'prop-types'
+import {TextField} from 'material-ui'
 
 const ASCII = {
   188: '44',
@@ -103,6 +104,12 @@ const charCodeToSign = ({ keyCode, shiftKey }) => {
 }
 
 class Hotkey extends Component {
+
+  constructor() {
+    super()
+    this.keys = ['Control', 'Space']
+  }
+
   onKeyDown(event) {
     if (!event.ctrlKey && !event.altKey && !event.metaKey) {
       // Do not allow to set global shorcut without modifier keys
@@ -127,14 +134,14 @@ class Hotkey extends Component {
     const { hotkey } = this.props
     const keys = hotkey.split('+').map(keyToSign).join(osKeyDelimiter)
     return (
-      <div>
-        <input
-          className={styles.input}
-          type="text"
-          value={keys}
-          onKeyDown={this.onKeyDown.bind(this)}
+        <TextField
+            label={this.props.label}
+            placeholder={this.props.placeholder}
+            helperText={this.props.helperText}
+            // className={styles.input}
+            value={keys}
+            onKeyDown={this.onKeyDown.bind(this)}
         />
-      </div>
     )
   }
 }
@@ -142,6 +149,9 @@ class Hotkey extends Component {
 Hotkey.propTypes = {
   hotkey: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
+  helperText: PropTypes.string,
+  placeholder: PropTypes.string,
+  label: PropTypes.string,
 }
 
 export default Hotkey

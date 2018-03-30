@@ -1,5 +1,7 @@
-import React, { Component, PropTypes } from 'react'
-import { VirtualScroll } from 'react-virtualized'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+
+import { List } from 'react-virtualized'
 
 import Row from './Row'
 import styles from './styles.css'
@@ -60,7 +62,7 @@ class ResultsList extends Component {
     }
     return (
       <div className={styles.wrapper}>
-        <VirtualScroll
+        <List
           ref="list"
           className={classNames}
           height={visibleResults * RESULT_HEIGHT}

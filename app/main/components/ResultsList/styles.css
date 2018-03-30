@@ -44,11 +44,11 @@
     display: none;
   }
 
-  input {
-    border: var(--preview-input-border);
-    background: var(--preview-input-background);
-    color: var(--preview-input-color);
-  }
+  /*input {*/
+    /*border: var(--preview-input-border);*/
+    /*background: var(--preview-input-background);*/
+    /*color: var(--preview-input-color);*/
+  /*}*/
 
   :global {
     /* Styles for react-select */

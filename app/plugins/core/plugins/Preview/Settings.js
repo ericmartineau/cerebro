@@ -1,4 +1,6 @@
-import React, { PropTypes, Component } from 'react'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+
 import config from 'lib/config'
 import FormItem from './FormItem'
 import styles from './styles.css'
