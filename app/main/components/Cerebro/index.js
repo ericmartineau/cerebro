@@ -6,8 +6,6 @@ import { bindActionCreators } from 'redux'
 import { clipboard, remote } from 'electron'
 import { focusableSelector } from 'cerebro-ui'
 import escapeStringRegexp from 'escape-string-regexp'
-import {AppBar, Toolbar, Input} from 'material-ui'
-
 
 import debounce from 'lodash/debounce'
 
@@ -21,10 +19,10 @@ import styles from './styles.css'
 import * as searchActions from '../../actions/search'
 
 import {
-  WINDOW_WIDTH,
   INPUT_HEIGHT,
-  RESULT_HEIGHT,
   MIN_VISIBLE_RESULTS,
+  RESULT_HEIGHT,
+  WINDOW_WIDTH,
 } from '../../constants/ui'
 
 const SHOW_EVENT = {
@@ -86,6 +84,7 @@ class Cerebro extends Component {
   constructor(props) {
     super(props)
     this.electronWindow = remote.getCurrentWindow()
+    this.mainInput = null
 
     this.onWindowResize = debounce(this.onWindowResize, 100).bind(this)
 
@@ -96,11 +95,20 @@ class Cerebro extends Component {
     this.onMainInputFocus = this.onMainInputFocus.bind(this)
     this.onMainInputBlur = this.onMainInputBlur.bind(this)
     this.cleanup = this.cleanup.bind(this)
-    this.focusMainInput = this.focusMainInput.bind(this)
     this.selectItem = this.selectItem.bind(this)
 
     this.state = {
       mainInputFocused: false
+    }
+
+    this.setInputRef = (el) => {
+      console.log('Set ref', el)
+      this.mainInput = el
+    }
+
+    this.focusMainInput = () => {
+      // Focus the text input using the raw DOM API
+      if (this.mainInput) this.mainInput.focus()
     }
   }
 
@@ -132,7 +140,8 @@ class Cerebro extends Component {
   }
 
   /**
-   * Handle resize window and change count of visible results depends on window size
+   * Handle resize window and change count of visible results depends on window
+   * size
    */
   onWindowResize() {
     if (this.props.results.length <= MIN_VISIBLE_RESULTS) {
@@ -148,7 +157,7 @@ class Cerebro extends Component {
   onDocumentKeydown(event) {
     if (event.keyCode === 27) {
       event.preventDefault()
-      document.getElementById('main-input').focus()
+      this.focusMainInput()
     }
   }
 
@@ -193,7 +202,6 @@ class Cerebro extends Component {
         event.preventDefault()
       }
     }
-
 
     if (event.metaKey || event.ctrlKey) {
       if (event.keyCode === 67) {
@@ -270,10 +278,6 @@ class Cerebro extends Component {
     this.electronWindow.removeListener('show', trackShowWindow)
   }
 
-  focusMainInput() {
-    this.refs.mainInput.focus()
-  }
-
   /**
    * Get highlighted result
    * @return {Object}
@@ -315,7 +319,8 @@ class Cerebro extends Component {
   }
 
   /**
-   * Set resizable and size for main electron window when results count is changed
+   * Set resizable and size for main electron window when results count is
+   * changed
    */
   updateElectronWindow() {
     const { results, visibleResults } = this.props
@@ -361,24 +366,23 @@ class Cerebro extends Component {
       return <div className={styles.autocomplete}>{term}</div>
     }
   }
+
   render() {
     const { mainInputFocused } = this.state
     return (
       <div className={styles.search}>
         {this.renderAutocomplete()}
 
+        <div className={styles.inputWrapper}>
           <MainInput
-              value={this.props.term}
-              ref="mainInput"
-              onChange={this.props.actions.updateTerm}
-              onKeyDown={this.onKeyDown}
-              onFocus={this.onMainInputFocus}
-              onBlur={this.onMainInputBlur}
+            value={this.props.term}
+            inputRef={this.setInputRef}
+            onChange={this.props.actions.updateTerm}
+            onKeyDown={this.onKeyDown}
+            onFocus={this.onMainInputFocus}
+            onBlur={this.onMainInputBlur}
           />
-
-          {/*<div className={styles.inputWrapper}>*/}
-
-          {/*</div>*/}
+        </div>
 
         <ResultsList
           results={this.props.results}

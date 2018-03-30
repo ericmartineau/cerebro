@@ -3,23 +3,20 @@ import styles from './styles.css'
 import SearchBar from 'material-ui-search-bar'
 
 class MainInput extends Component {
-  focus() {
-    this.refs.input.focus()
-  }
+
   render() {
     return (
       <SearchBar
         placeholder="Cerebro Search"
-        fullWidth="true"
-        type="text"
         id="main-input"
-        ref="input"
+        inputRef={this.props.inputRef}
         value={this.props.value}
-        // className={styles.input}
-        onChange={e => this.props.onChange(e.target.value)}
-        onKeyDown={this.props.onKeyDown}
-        onFocus={this.props.onFocus}
+        onRequestSearch={this.props.onChange}
+        className={styles.input}
         onBlur={this.props.onBlur}
+        onKeyDown={this.props.onKeyDown}
+        onChange={this.props.onChange}
+        onFocus={this.props.onFocus}
       />
     )
   }
@@ -28,9 +25,11 @@ class MainInput extends Component {
 MainInput.propTypes = {
   value: PropTypes.string,
   onChange: PropTypes.func,
+  onSearch: PropTypes.func,
   onKeyDown: PropTypes.func,
   onFocus: PropTypes.func,
   onBlur: PropTypes.func,
+  inputRef: PropTypes.func,
 }
 
 export default MainInput

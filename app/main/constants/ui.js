@@ -1,5 +1,5 @@
 // Height of main input
-export const INPUT_HEIGHT = 45
+export const INPUT_HEIGHT = 69
 
 // Heigth of default result line
 export const RESULT_HEIGHT = 45
