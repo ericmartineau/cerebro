@@ -1,12 +1,27 @@
-import SmartIcon from 'cerebro-ui/SmartIcon'
-import Avatar from 'material-ui/Avatar'
-import Grid from 'material-ui/Grid'
-import List, { ListItem, ListItemText } from 'material-ui/List'
-import ListSubheader from 'material-ui/List/ListSubheader'
 import { withStyles } from 'material-ui/styles'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import styles from 'main/theme/selected'
+import Typography from 'material-ui/Typography'
+import Drawer from 'material-ui/Drawer'
+import { ListItemIcon, ListItemText } from 'material-ui/List'
+import { MenuItem, MenuList } from 'material-ui/Menu'
+
+import ListSubheader from 'material-ui/List/ListSubheader'
+
+
+const styles = theme => ({
+  drawerPaper: {
+    position: 'relative',
+    width: theme.resultList.width,
+  },
+  content: {
+    flexGrow: 1,
+    backgroundColor: theme.palette.background.default,
+    padding: theme.spacing.unit * 3,
+    minWidth: 0, // So the Typography noWrap works
+  },
+  toolbar: theme.mixins.toolbar,
+})
 
 // import Row from './Row'
 
@@ -65,18 +80,7 @@ class ResultsList extends Component {
     return null
   }
 
-  renderPreview() {
-    const selected = this.props.results[this.props.selected]
-    if (!selected.getPreview) {
-      return null
-    }
-    const preview = selected.getPreview()
-    if (typeof preview === 'string') {
-      // Fallback for html previews intead of react component
-      return <div dangerouslySetInnerHTML={{ __html: preview }} />
-    }
-    return preview
-  }
+
 
   render() {
     const { classes, results, selected, visibleResults, mainInputFocused } = this.props
@@ -84,38 +88,10 @@ class ResultsList extends Component {
       return null
     }
     return (
-      <Grid container>
-        <Grid item xs={12} sm={4} lg={2}>
-          <List
-            ref="list"
-            component="nav"
-            dense
-            className={classes.resultList}
-            subheader={<ListSubheader component="div">Results</ListSubheader>}
-          >
-            {this.props.results.map(item => (
-              <ListItem button key={item.id} selected className={classes.resultItem}>
-                {item.icon &&
-                <Avatar className={classes.resultIcon}>
-                  <SmartIcon path={item.icon} className={styles.icon} />
-                </Avatar>
-                }
-                <ListItemText
-                  className={classes.resultText}
-                  primary={item.title}
-                  secondary={item.description}
-                />
-              </ListItem>
-            ))}
-          </List>
+      <div className={classes.root}>
 
-        </Grid>
-        <Grid item xs={12} sm={8} lg={10}>
-          <div className={classes.resultPreview}>
-            {this.renderPreview()}
-          </div>
-        </Grid>
-      </Grid>
+      </div>
+
     )
   }
 }
@@ -130,4 +106,4 @@ ResultsList.propTypes = {
   mainInputFocused: PropTypes.bool,
 }
 
-export default withStyles(styles)(ResultsList)
+export default withStyles({})(ResultsList)

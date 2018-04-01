@@ -177,7 +177,7 @@
     "minimist": "1.2.0",
     "mocha": "^3.4.2",
     "mocha-webpack": "1.1.0",
-    "node-libs-browser": "2.0.0",
+    "node-libs-browser": "2.1.0",
     "null-loader": "0.1.1",
     "optimize-js-plugin": "0.0.4",
     "postcss-loader": "^2.0.6",
@@ -229,6 +229,6 @@
     "tar-fs": "1.15.0"
   },
   "devEngines": {
-    "node": ">=6.x"
+    "node": ">=6.x <9.0.0"
   }
 }

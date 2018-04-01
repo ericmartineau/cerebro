@@ -2236,7 +2236,7 @@ cerebro-tools@0.1.8:
     memoizee "^0.4.1"
 
 "cerebro-ui@file:.yalc/cerebro-ui":
-  version "0.1.16-e01811a3"
+  version "0.1.16-ed61c638"
   dependencies:
     prop-types "^15.6.0"
     react "^16.0.0"
@@ -7341,7 +7341,7 @@ markerwithlabel@^2.0.1:
   resolved "https://registry.yarnpkg.com/markerwithlabel/-/markerwithlabel-2.0.1.tgz#822f4eb68c488c2509c5ebdb75982eb84a856096"
 
 "material-dashboard-pro-react@file:.yalc/material-dashboard-pro-react":
-  version "1.0.0-9199e1a0"
+  version "1.0.1-e09aeeef"
   dependencies:
     chartist "0.10.1"
     history "4.7.2"
@@ -7373,7 +7373,7 @@ material-ui-icons@1.0.0-beta.36, material-ui-icons@^1.0.0-beta.17, material-ui-i
     recompose "^0.26.0"
 
 "material-ui-search-bar@file:.yalc/material-ui-search-bar":
-  version "1.0.0-mverse.1-28c20ab8"
+  version "1.0.0-mverse.1-c44dbf0c"
   dependencies:
     material-ui-icons "^1.0.0-beta.17"
     prop-types "^15.5.8"
@@ -7945,35 +7945,7 @@ node-int64@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/node-int64/-/node-int64-0.4.0.tgz#87a9065cdb355d3182d8f94ce11188b825c68a3b"
 
-node-libs-browser@2.0.0, node-libs-browser@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/node-libs-browser/-/node-libs-browser-2.0.0.tgz#a3a59ec97024985b46e958379646f96c4b616646"
-  dependencies:
-    assert "^1.1.1"
-    browserify-zlib "^0.1.4"
-    buffer "^4.3.0"
-    console-browserify "^1.1.0"
-    constants-browserify "^1.0.0"
-    crypto-browserify "^3.11.0"
-    domain-browser "^1.1.1"
-    events "^1.0.0"
-    https-browserify "0.0.1"
-    os-browserify "^0.2.0"
-    path-browserify "0.0.0"
-    process "^0.11.0"
-    punycode "^1.2.4"
-    querystring-es3 "^0.2.0"
-    readable-stream "^2.0.5"
-    stream-browserify "^2.0.1"
-    stream-http "^2.3.1"
-    string_decoder "^0.10.25"
-    timers-browserify "^2.0.2"
-    tty-browserify "0.0.0"
-    url "^0.11.0"
-    util "^0.10.3"
-    vm-browserify "0.0.4"
-
-"node-libs-browser@^1.0.0 || ^2.0.0":
+node-libs-browser@2.1.0, "node-libs-browser@^1.0.0 || ^2.0.0":
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/node-libs-browser/-/node-libs-browser-2.1.0.tgz#5f94263d404f6e44767d726901fff05478d600df"
   dependencies:
@@ -7996,6 +7968,34 @@ node-libs-browser@2.0.0, node-libs-browser@^2.0.0:
     stream-http "^2.7.2"
     string_decoder "^1.0.0"
     timers-browserify "^2.0.4"
+    tty-browserify "0.0.0"
+    url "^0.11.0"
+    util "^0.10.3"
+    vm-browserify "0.0.4"
+
+node-libs-browser@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/node-libs-browser/-/node-libs-browser-2.0.0.tgz#a3a59ec97024985b46e958379646f96c4b616646"
+  dependencies:
+    assert "^1.1.1"
+    browserify-zlib "^0.1.4"
+    buffer "^4.3.0"
+    console-browserify "^1.1.0"
+    constants-browserify "^1.0.0"
+    crypto-browserify "^3.11.0"
+    domain-browser "^1.1.1"
+    events "^1.0.0"
+    https-browserify "0.0.1"
+    os-browserify "^0.2.0"
+    path-browserify "0.0.0"
+    process "^0.11.0"
+    punycode "^1.2.4"
+    querystring-es3 "^0.2.0"
+    readable-stream "^2.0.5"
+    stream-browserify "^2.0.1"
+    stream-http "^2.3.1"
+    string_decoder "^0.10.25"
+    timers-browserify "^2.0.2"
     tty-browserify "0.0.0"
     url "^0.11.0"
     util "^0.10.3"

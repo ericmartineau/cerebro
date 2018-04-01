@@ -5,14 +5,10 @@ import { Provider } from 'react-redux'
 import initializePlugins from 'lib/initializePlugins'
 import { on } from '../lib/rpc'
 import { updateTerm } from './actions/search'
-import config from '../lib/config'
 import store from './store'
 import Cerebro from './components/Cerebro'
 import './css/global.css'
-import {
-  createMuiTheme,
-  MuiThemeProvider,
-} from 'material-ui/styles'
+import { createMuiTheme, MuiThemeProvider } from 'material-ui/styles'
 
 require('fix-path')()
 
@@ -29,7 +25,23 @@ const changeTheme = (src) => {
   document.getElementById('cerebro-theme').href = src
 }
 
-const defaultTheme = createMuiTheme()
+const defaultTheme = createMuiTheme(
+  {
+    palette: {
+      type: 'dark',
+    },
+    typography: {
+      fontFamily: 'Roboto',
+      fontWeight: 'light',
+    },
+    searchBar: {
+      height: 70,
+    },
+    resultList: {
+      width: 420,
+    },
+  }
+)
 
 // Set theme from config
 // const themeName = config.get('theme')
@@ -48,7 +60,7 @@ ReactDOM.render(
       <Cerebro />
     </MuiThemeProvider>
   </Provider>,
-  document.getElementById('root')
+  document.getElementById('root'),
 )
 
 // Initialize plugins
@@ -59,7 +71,7 @@ on('showTerm', term => store.dispatch(updateTerm(term)))
 
 on('update-downloaded', () => (
   new Notification('Cerebro: update is ready to install', {
-    body: 'New version is downloaded and will be automatically installed on quit'
+    body: 'New version is downloaded and will be automatically installed on quit',
   })
 ))
 

@@ -8,6 +8,13 @@ import getWindowPosition from 'lib/getWindowPosition'
 
 import { trackEvent } from 'lib/trackEvent'
 import debounce from 'lodash/debounce'
+import SmartIcon from 'cerebro-ui/SmartIcon'
+import Typography from 'material-ui/Typography'
+import Drawer from 'material-ui/Drawer'
+import { ListItemIcon, ListItemText } from 'material-ui/List'
+import { MenuItem, MenuList } from 'material-ui/Menu'
+
+import ListSubheader from 'material-ui/List/ListSubheader'
 
 import {
   INPUT_HEIGHT,
@@ -15,10 +22,9 @@ import {
   RESULT_HEIGHT,
   WINDOW_WIDTH,
 } from 'main/constants/ui'
-
-import styles from 'main/theme/selected'
-import SearchBar from 'material-ui-search-bar'
+// import SearchBar from 'material-ui-search-bar'
 import AppBar from 'material-ui/AppBar'
+import Toolbar from 'material-ui/Toolbar'
 import Input from 'material-ui/Input'
 import { withStyles } from 'material-ui/styles'
 
@@ -27,9 +33,48 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as searchActions from '../../actions/search'
-
-import ResultsList from '../ResultsList'
+// import ResultsList from '../ResultsList'
 import StatusBar from '../StatusBar'
+// import Avatar from 'material-ui/Avatar'
+
+// import styles from 'main/theme/selected'
+
+const styles = theme => ({
+  root: {
+    flexGrow: 1,
+    height: '100%',
+    zIndex: 1,
+    overflow: 'hidden',
+    position: 'relative',
+    display: 'flex',
+    background: theme.palette.background.paper,
+  },
+  mainInput: {
+    fontSize: '40px',
+    fontWeight: 300,
+    fontFamily: 'Roboto Condensed',
+  },
+  appBar: {
+    zIndex: theme.zIndex.drawer + 1,
+  },
+  drawerPaper: {
+    position: 'relative',
+    width: theme.resultList.width,
+  },
+  resultPreview: {
+    flexGrow: 1,
+    backgroundColor: theme.palette.background.default,
+    padding: theme.spacing.unit * 3,
+    minWidth: 0, // So the Typography noWrap works
+  },
+  content: {
+    flexGrow: 1,
+    backgroundColor: theme.palette.background.default,
+    padding: theme.spacing.unit * 3,
+    minWidth: 0, // So the Typography noWrap works
+  },
+  toolbar: theme.mixins.toolbar,
+})
 
 const SHOW_EVENT = {
   category: 'Window',
@@ -80,9 +125,6 @@ const cursorInEndOfInput = ({ selectionStart, selectionEnd, value }) => (
   selectionStart === selectionEnd && selectionStart >= value.length
 )
 
-
-
-
 /**
  * Main search container
  *
@@ -95,18 +137,22 @@ class Cerebro extends Component {
     this.electronWindow = remote.getCurrentWindow()
     this.mainInput = null
 
-
     this.onWindowResize = debounce(this.onWindowResize, 100).bind(this)
 
-    this.updateElectronWindow =
-      debounce(this.updateElectronWindow, 100).bind(this)
-
+    this.updateElectronWindow = this.updateElectronWindow.bind(this)
     this.onDocumentKeydown = this.onDocumentKeydown.bind(this)
     this.onKeyDown = this.onKeyDown.bind(this)
     this.onMainInputFocus = this.onMainInputFocus.bind(this)
     this.onMainInputBlur = this.onMainInputBlur.bind(this)
     this.cleanup = this.cleanup.bind(this)
     this.selectItem = this.selectItem.bind(this)
+
+    // const debouncedUpdateTerm = debounce((newValue) => {
+    //   console.log('Event', newValue)
+    //   return this.props.actions.updateTerm(newValue)
+    // }, 100)
+    //
+    // this.updateTerm = event => debouncedUpdateTerm(event.target.value)
 
     this.state = {
       mainInputFocused: false,
@@ -163,7 +209,7 @@ class Cerebro extends Component {
       return false
     }
     let visibleResults = Math.floor((window.outerHeight - INPUT_HEIGHT)
-      / RESULT_HEIGHT)
+                                    / RESULT_HEIGHT)
     visibleResults = Math.max(MIN_VISIBLE_RESULTS, visibleResults)
     if (visibleResults !== this.props.visibleResults) {
       this.props.actions.changeVisibleResults(visibleResults)
@@ -356,10 +402,10 @@ class Cerebro extends Component {
     }
 
     const resultHeight = Math.max(Math.min(visibleResults, length),
-      MIN_VISIBLE_RESULTS)
+                                  MIN_VISIBLE_RESULTS)
     const heightWithResults = resultHeight * RESULT_HEIGHT + INPUT_HEIGHT
     const minHeightWithResults = MIN_VISIBLE_RESULTS * RESULT_HEIGHT
-      + INPUT_HEIGHT
+                                 + INPUT_HEIGHT
     win.setMinimumSize(WINDOW_WIDTH, minHeightWithResults)
     win.setSize(width, heightWithResults)
     win.setPosition(...getWindowPosition({ width, heightWithResults }))
@@ -387,7 +433,6 @@ class Cerebro extends Component {
     }
   }
 
-
   render() {
     const { mainInputFocused } = this.state
     const { classes } = this.props
@@ -395,48 +440,113 @@ class Cerebro extends Component {
     return (
       <div className={classes.root}>
         {this.renderAutocomplete()}
-        <AppBar className={classes.searchBar}>
-          <Input className={classes.searchBarInput} />
+        <AppBar color="default" position="absolute" className={classes.appBar}>
+          <Toolbar color="inherit">
+            <Input autoFocus
+                   fullWidth
+                   inputRef={this.setInputRef}
+                   onChange={e => this.props.actions.updateTerm(e.target.value)}
+                   placeholder="Cerebro Search"
+                   className={classes.mainInput}
+                   value={this.props.term}
+                   onBlur={this.onMainInputBlur}
+                   onKeyDown={this.onKeyDown}
+                   onFocus={this.onMainInputFocus}
+                   color="inherit"
+                   disableUnderline
+            />
+          </Toolbar>
         </AppBar>
-        {/*<SearchBar*/}
-          {/*placeholder="Cerebro Search"*/}
-          {/*inputRef={this.setInputRef}*/}
-          {/*className={classes.searchBarInput}*/}
-          {/*value={this.props.term}*/}
-          {/*onRequestSearch={this.props.actions.updateTerm}*/}
-          {/*onBlur={this.onMainInputBlur}*/}
-          {/*onKeyDown={this.onKeyDown}*/}
-          {/*onChange={this.props.actions.updateTerm}*/}
-          {/*onFocus={this.onMainInputFocus}*/}
-        {/*/>*/}
+        {this.props.results.length > 0
+         && <Drawer
+           variant="permanent"
+           classes={{
+             paper: classes.drawerPaper,
+           }}
+         >
+           <div className={classes.toolbar} />
+           <MenuList
+             ref="list"
+             dense
+             className={classes.list}
+             subheader={<ListSubheader component="div">Results</ListSubheader>}
+           >
+             {this.props.results.map(item => (
+               <MenuItem
+                 className={classes.menuItem}
+                 button
+                 onSelect={this.selectItem}
+                 key={item.id}
+               >
+                 {item.icon &&
+                  <ListItemIcon className={classes.icon}>
+                    <SmartIcon path={item.icon} />
+                  </ListItemIcon>
+                 }
+                 <ListItemText
+                   inset
+                   classes={{ primary: classes.primary }}
+                   primary={item.title}
+                   secondary={item.description}
+                 />
+               </MenuItem>
+             ))}
+           </MenuList>
+         </Drawer>
+        }
 
-        <div className={classes.results}>
-          <ResultsList
-            results={this.props.results}
-            selected={this.props.selected}
-            visibleResults={this.props.visibleResults}
-            onItemHover={this.props.actions.selectElement}
-            onSelect={this.selectItem}
-            mainInputFocused={mainInputFocused}
-          />
-          {this.props.statusBarText
-          && <StatusBar value={this.props.statusBarText} />}
-        </div>
+        {this.props.results.length > 0 &&
+         <main className={classes.content}>
+           <div className={classes.toolbar} />
+           <Typography noWrap>
+             {'You think water moves fast? You should see ice.'}
+           </Typography>
+           {this.renderPreview()}
+         </main>
+        }
 
+        {this.props.statusBarText
+         && <StatusBar value={this.props.statusBarText} />}
       </div>
 
     )
   }
+
+  renderPreview() {
+    const selected = this.props.results[this.props.selected]
+    if (!selected.getPreview) {
+      return null
+    }
+    const preview = selected.getPreview()
+    if (typeof preview === 'string') {
+      // Fallback for html previews intead of react component
+      return <div dangerouslySetInnerHTML={{ __html: preview }} />
+    }
+    return preview
+  }
 }
 
+//
+// <div className={classes.results}>
+//   <ResultsList
+//     results={this.props.results}
+//     selected={this.props.selected}
+//     visibleResults={this.props.visibleResults}
+//
+//     onSelect={this.selectItem}
+//     mainInputFocused={mainInputFocused}
+//   />
+//
+// </div>
 Cerebro.propTypes = {
-  actions: PropTypes.shape({
-    reset: PropTypes.func,
-    moveCursor: PropTypes.func,
-    updateTerm: PropTypes.func,
-    changeVisibleResults: PropTypes.func,
-    selectElement: PropTypes.func,
-  }),
+  actions: PropTypes.shape(
+    {
+      reset: PropTypes.func,
+      moveCursor: PropTypes.func,
+      updateTerm: PropTypes.func,
+      changeVisibleResults: PropTypes.func,
+      selectElement: PropTypes.func,
+    }),
   classes: PropTypes.object.isRequired,
   results: PropTypes.array,
   selected: PropTypes.number,
@@ -463,4 +573,5 @@ function mapDispatchToProps(dispatch) {
   }
 }
 
-export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(Cerebro))
+export default withStyles(styles)(
+  connect(mapStateToProps, mapDispatchToProps)(Cerebro))

@@ -1,4 +1,5 @@
 import plugins from 'plugins'
+import { debounce } from 'lodash'
 import config from 'lib/config'
 import { shell, clipboard, remote } from 'electron'
 import { settings as pluginSettings } from 'lib/plugins'
@@ -86,6 +87,23 @@ export function reset() {
   }
 }
 
+const debouncedPluginExecution = debounce((term, dispatch) => {
+  eachPlugin(term, (plugin, payload) => {
+    let result = Array.isArray(payload) ? payload : [payload]
+    result = result.map(x => ({
+      ...x,
+      plugin,
+      // Scope result ids with plugin name and use title if id is empty
+      id: `${plugin}-${x.id || x.title}`
+    }))
+    if (result.length === 0) {
+      // Do not dispatch for empty results
+      return
+    }
+    dispatch(onResultFound(term, result))
+  })
+}, 200)
+
 /**
  * Action that updates search term
  *
@@ -96,25 +114,14 @@ export function updateTerm(term) {
   if (term === '') {
     return reset()
   }
+
   return (dispatch) => {
     dispatch({
       type: UPDATE_TERM,
       payload: term,
     })
-    eachPlugin(term, (plugin, payload) => {
-      let result = Array.isArray(payload) ? payload : [payload]
-      result = result.map(x => ({
-        ...x,
-        plugin,
-        // Scope result ids with plugin name and use title if id is empty
-        id: `${plugin}-${x.id || x.title}`
-      }))
-      if (result.length === 0) {
-        // Do not dispatch for empty results
-        return
-      }
-      dispatch(onResultFound(term, result))
-    })
+
+    debouncedPluginExecution(term, dispatch)
   }
 }
 

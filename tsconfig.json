@@ -4,8 +4,7 @@
     "jsx": "react",
     "baseUrl": ".",
     "paths": {
-      "*": ["*", "app/*"],
-      "material-dashboard-pro-react/*": ["./node_modules/material-dashboard-pro-react/src/*"]
+      "*": ["*", "app/*"]
     }
   }
 }
