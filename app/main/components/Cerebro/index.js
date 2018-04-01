@@ -42,7 +42,7 @@ import StatusBar from '../StatusBar'
 const styles = theme => ({
   root: {
     flexGrow: 1,
-    height: '100%',
+    height: 430,
     zIndex: 1,
     overflow: 'hidden',
     position: 'relative',
@@ -61,19 +61,12 @@ const styles = theme => ({
     position: 'relative',
     width: theme.resultList.width,
   },
-  resultPreview: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.default,
-    padding: theme.spacing.unit * 3,
-    minWidth: 0, // So the Typography noWrap works
-  },
   content: {
     flexGrow: 1,
     backgroundColor: theme.palette.background.default,
     padding: theme.spacing.unit * 3,
     minWidth: 0, // So the Typography noWrap works
   },
-  toolbar: theme.mixins.toolbar,
 })
 
 const SHOW_EVENT = {
