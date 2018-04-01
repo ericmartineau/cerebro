@@ -1,5 +1,5 @@
-import config from 'lib/config'
-import plugins from 'plugins'
+import config from '../../config'
+import plugins from '../../../plugins'
 
 const getSettings = pluginName => config.get('plugins')[pluginName] || {}
 

@@ -5,6 +5,7 @@ const baseConfig = require('./webpack.config.base');
 const config = {
   ...baseConfig,
 
+  mode: 'development',
   devtool: 'inline-source-map',
 
   entry: {

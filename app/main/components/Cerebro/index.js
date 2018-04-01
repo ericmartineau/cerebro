@@ -1,39 +1,44 @@
-/* eslint default-case: 0 */
-
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { clipboard, remote } from 'electron'
 import { focusableSelector } from 'cerebro-ui'
+import { clipboard, remote } from 'electron'
 import escapeStringRegexp from 'escape-string-regexp'
+/* eslint default-case: 0 */
+import key from 'keycode-js'
 
-import debounce from 'lodash/debounce'
-
-import { trackEvent } from 'lib/trackEvent'
 import getWindowPosition from 'lib/getWindowPosition'
 
-import MainInput from '../MainInput'
-import ResultsList from '../ResultsList'
-import StatusBar from '../StatusBar'
-import styles from './styles.css'
-import * as searchActions from '../../actions/search'
+import { trackEvent } from 'lib/trackEvent'
+import debounce from 'lodash/debounce'
 
 import {
   INPUT_HEIGHT,
   MIN_VISIBLE_RESULTS,
   RESULT_HEIGHT,
   WINDOW_WIDTH,
-} from '../../constants/ui'
+} from 'main/constants/ui'
+
+import styles from 'main/theme/selected'
+import SearchBar from 'material-ui-search-bar'
+import AppBar from 'material-ui/AppBar'
+import Input from 'material-ui/Input'
+import { withStyles } from 'material-ui/styles'
+
+import PropTypes from 'prop-types'
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import * as searchActions from '../../actions/search'
+
+import ResultsList from '../ResultsList'
+import StatusBar from '../StatusBar'
 
 const SHOW_EVENT = {
   category: 'Window',
-  event: 'show'
+  event: 'show',
 }
 
 const SELECT_EVENT = {
   category: 'Plugins',
-  event: 'select'
+  event: 'select',
 }
 
 const trackShowWindow = () => trackEvent(SHOW_EVENT)
@@ -75,6 +80,9 @@ const cursorInEndOfInput = ({ selectionStart, selectionEnd, value }) => (
   selectionStart === selectionEnd && selectionStart >= value.length
 )
 
+
+
+
 /**
  * Main search container
  *
@@ -87,9 +95,11 @@ class Cerebro extends Component {
     this.electronWindow = remote.getCurrentWindow()
     this.mainInput = null
 
+
     this.onWindowResize = debounce(this.onWindowResize, 100).bind(this)
 
-    this.updateElectronWindow = debounce(this.updateElectronWindow, 100).bind(this)
+    this.updateElectronWindow =
+      debounce(this.updateElectronWindow, 100).bind(this)
 
     this.onDocumentKeydown = this.onDocumentKeydown.bind(this)
     this.onKeyDown = this.onKeyDown.bind(this)
@@ -99,7 +109,7 @@ class Cerebro extends Component {
     this.selectItem = this.selectItem.bind(this)
 
     this.state = {
-      mainInputFocused: false
+      mainInputFocused: false,
     }
 
     this.setInputRef = (el) => {
@@ -108,27 +118,30 @@ class Cerebro extends Component {
     }
 
     this.focusMainInput = () => {
-      // Focus the text input using the raw DOM API
-      if (this.mainInput) this.mainInput.focus()
+      if (this.mainInput) {
+        this.mainInput.focus()
+      }
     }
-  }
 
-  componentWillMount() {
-    // Listen for window.resize and change default space for results to user's value
+    // Listen for window.resize and change default space for results to user's
+    // value
     window.addEventListener('resize', this.onWindowResize)
     // Add some global key handlers
     window.addEventListener('keydown', this.onDocumentKeydown)
     // Cleanup event listeners on unload
-    // NOTE: when page refreshed (location.reload) componentWillUnmount is not called
+    // NOTE: when page refreshed (location.reload) componentWillUnmount is not
+    // called
     window.addEventListener('beforeunload', this.cleanup)
     this.electronWindow.on('show', this.focusMainInput)
     this.electronWindow.on('show', this.updateElectronWindow)
     this.electronWindow.on('show', trackShowWindow)
   }
+
   componentDidMount() {
     this.focusMainInput()
     this.updateElectronWindow()
   }
+
   componentDidUpdate(prevProps) {
     const { results } = this.props
     if (results.length !== prevProps.results.length) {
@@ -136,6 +149,7 @@ class Cerebro extends Component {
       this.updateElectronWindow()
     }
   }
+
   componentWillUnmount() {
     this.cleanup()
   }
@@ -148,7 +162,8 @@ class Cerebro extends Component {
     if (this.props.results.length <= MIN_VISIBLE_RESULTS) {
       return false
     }
-    let visibleResults = Math.floor((window.outerHeight - INPUT_HEIGHT) / RESULT_HEIGHT)
+    let visibleResults = Math.floor((window.outerHeight - INPUT_HEIGHT)
+      / RESULT_HEIGHT)
     visibleResults = Math.max(MIN_VISIBLE_RESULTS, visibleResults)
     if (visibleResults !== this.props.visibleResults) {
       this.props.actions.changeVisibleResults(visibleResults)
@@ -201,7 +216,7 @@ class Cerebro extends Component {
           this.props.actions.updateTerm(this.props.prevTerm)
         }
         event.preventDefault()
-      }
+      },
     }
 
     if (event.metaKey || event.ctrlKey) {
@@ -215,47 +230,47 @@ class Cerebro extends Component {
         }
         return
       }
-      if (event.keyCode >= 49 && event.keyCode <= 57) {
+      if (event.keyCode >= key.KEY_1 && event.keyCode <= key.KEY_9) {
         // Select element by number
-        const number = Math.abs(49 - event.keyCode)
-        const result = this.props.results[number]
-        if (result) {
-          return this.selectItem(result)
+        const number = Math.abs(key.KEY_1 - event.keyCode)
+        const selectedIndex = this.props.results[number]
+        if (selectedIndex) {
+          return this.selectItem(selectedIndex)
         }
       }
       // Lightweight vim-mode: cmd/ctrl + jklo
       switch (event.keyCode) {
-        case 74:
+        case key.KEY_J:
           keyActions.arrowDown()
           break
-        case 75:
+        case key.KEY_K:
           keyActions.arrowUp()
           break
-        case 76:
+        case key.KEY_L:
           keyActions.arrowRight()
           break
-        case 79:
+        case key.KEY_O:
           keyActions.select()
           break
       }
     }
     switch (event.keyCode) {
-      case 9:
+      case key.KEY_TAB:
         this.autocomplete(event)
         break
-      case 39:
+      case key.KEY_RIGHT:
         keyActions.arrowRight()
         break
-      case 40:
+      case key.KEY_DOWN:
         keyActions.arrowDown()
         break
-      case 38:
+      case key.KEY_UP:
         keyActions.arrowUp()
         break
-      case 13:
+      case key.KEY_RETURN:
         keyActions.select()
         break
-      case 27:
+      case key.KEY_ESCAPE:
         this.props.actions.reset()
         this.electronWindow.hide()
         break
@@ -312,6 +327,7 @@ class Cerebro extends Component {
       event.preventDefault()
     }
   }
+
   /**
    * Select highlighted element
    */
@@ -339,9 +355,11 @@ class Cerebro extends Component {
       return
     }
 
-    const resultHeight = Math.max(Math.min(visibleResults, length), MIN_VISIBLE_RESULTS)
+    const resultHeight = Math.max(Math.min(visibleResults, length),
+      MIN_VISIBLE_RESULTS)
     const heightWithResults = resultHeight * RESULT_HEIGHT + INPUT_HEIGHT
-    const minHeightWithResults = MIN_VISIBLE_RESULTS * RESULT_HEIGHT + INPUT_HEIGHT
+    const minHeightWithResults = MIN_VISIBLE_RESULTS * RESULT_HEIGHT
+      + INPUT_HEIGHT
     win.setMinimumSize(WINDOW_WIDTH, minHeightWithResults)
     win.setSize(width, heightWithResults)
     win.setPosition(...getWindowPosition({ width, heightWithResults }))
@@ -357,6 +375,7 @@ class Cerebro extends Component {
     }
     return ''
   }
+
   /**
    * Render autocomplete suggestion from selected item
    * @return {React}
@@ -364,37 +383,48 @@ class Cerebro extends Component {
   renderAutocomplete() {
     const term = this.autocompleteValue()
     if (term) {
-      return <div className={styles.autocomplete}>{term}</div>
+      return <div className={this.props.classes.autocomplete}>{term}</div>
     }
   }
 
+
   render() {
     const { mainInputFocused } = this.state
-    return (
-      <div className={styles.search}>
-        {this.renderAutocomplete()}
+    const { classes } = this.props
 
-        <div className={styles.inputWrapper}>
-          <MainInput
-            value={this.props.term}
-            inputRef={this.setInputRef}
-            onChange={this.props.actions.updateTerm}
-            onKeyDown={this.onKeyDown}
-            onFocus={this.onMainInputFocus}
-            onBlur={this.onMainInputBlur}
+    return (
+      <div className={classes.root}>
+        {this.renderAutocomplete()}
+        <AppBar className={classes.searchBar}>
+          <Input className={classes.searchBarInput} />
+        </AppBar>
+        {/*<SearchBar*/}
+          {/*placeholder="Cerebro Search"*/}
+          {/*inputRef={this.setInputRef}*/}
+          {/*className={classes.searchBarInput}*/}
+          {/*value={this.props.term}*/}
+          {/*onRequestSearch={this.props.actions.updateTerm}*/}
+          {/*onBlur={this.onMainInputBlur}*/}
+          {/*onKeyDown={this.onKeyDown}*/}
+          {/*onChange={this.props.actions.updateTerm}*/}
+          {/*onFocus={this.onMainInputFocus}*/}
+        {/*/>*/}
+
+        <div className={classes.results}>
+          <ResultsList
+            results={this.props.results}
+            selected={this.props.selected}
+            visibleResults={this.props.visibleResults}
+            onItemHover={this.props.actions.selectElement}
+            onSelect={this.selectItem}
+            mainInputFocused={mainInputFocused}
           />
+          {this.props.statusBarText
+          && <StatusBar value={this.props.statusBarText} />}
         </div>
 
-        <ResultsList
-          results={this.props.results}
-          selected={this.props.selected}
-          visibleResults={this.props.visibleResults}
-          onItemHover={this.props.actions.selectElement}
-          onSelect={this.selectItem}
-          mainInputFocused={mainInputFocused}
-        />
-        {this.props.statusBarText && <StatusBar value={this.props.statusBarText} />}
       </div>
+
     )
   }
 }
@@ -407,6 +437,7 @@ Cerebro.propTypes = {
     changeVisibleResults: PropTypes.func,
     selectElement: PropTypes.func,
   }),
+  classes: PropTypes.object.isRequired,
   results: PropTypes.array,
   selected: PropTypes.number,
   visibleResults: PropTypes.number,
@@ -432,4 +463,4 @@ function mapDispatchToProps(dispatch) {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Cerebro)
+export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(Cerebro))

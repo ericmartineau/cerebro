@@ -1,18 +1,42 @@
-import React, { Component } from 'react'
+import SmartIcon from 'cerebro-ui/SmartIcon'
+import Avatar from 'material-ui/Avatar'
+import Grid from 'material-ui/Grid'
+import List, { ListItem, ListItemText } from 'material-ui/List'
+import ListSubheader from 'material-ui/List/ListSubheader'
+import { withStyles } from 'material-ui/styles'
 import PropTypes from 'prop-types'
+import React, { Component } from 'react'
+import styles from 'main/theme/selected'
 
-import { List } from 'react-virtualized'
+// import Row from './Row'
 
-import Row from './Row'
-import styles from './styles.css'
-import { RESULT_HEIGHT } from '../../constants/ui'
-
+// const styles = theme => ({
+//   root: {
+//     flexGrow: 1,
+//     backgroundColor: theme.palette.background.paper,
+//   },
+//   listSection: {
+//     minWidth: 0,
+//   },
+//   resultsList: {
+//     borderRight: theme.palette.divider.default,
+//     backgroundColor: theme.palette.background.paper,
+//     overflow: 'auto',
+//     maxHeight: '100%',
+//   },
+//   preview: {
+//     padding: theme.spacing.unit * 3,
+//     minWidth: 0, // So the Typography noWrap works
+//     backgroundColor: theme.palette.background.paper,
+//   },
+// })
 
 class ResultsList extends Component {
   constructor(props) {
     super(props)
     this.rowRenderer = this.rowRenderer.bind(this)
   }
+
   rowRenderer({ index }) {
     const result = this.props.results[index]
     const attrs = {
@@ -37,8 +61,10 @@ class ResultsList extends Component {
       },
       key: result.id,
     }
-    return <Row {...attrs} />
+    // return <Row {...attrs} />
+    return null
   }
+
   renderPreview() {
     const selected = this.props.results[this.props.selected]
     if (!selected.getPreview) {
@@ -51,41 +77,51 @@ class ResultsList extends Component {
     }
     return preview
   }
+
   render() {
-    const { results, selected, visibleResults, mainInputFocused } = this.props
-    const classNames = [
-      styles.resultsList,
-      mainInputFocused ? styles.focused : styles.unfocused
-    ].join(' ')
+    const { classes, results, selected, visibleResults, mainInputFocused } = this.props
     if (results.length === 0) {
       return null
     }
     return (
-      <div className={styles.wrapper}>
-        <List
-          ref="list"
-          className={classNames}
-          height={visibleResults * RESULT_HEIGHT}
-          overscanRowCount={2}
-          rowCount={results.length}
-          rowHeight={RESULT_HEIGHT}
-          rowRenderer={this.rowRenderer}
-          width={10000}
-          scrollToIndex={selected}
-          // Needed to force update of VirtualScroll
-          titles={results.map(result => result.title)}
-          // Disable accesebility of VirtualScroll by tab
-          tabIndex={null}
-        />
-        <div className={styles.preview} id="preview">
-          {this.renderPreview()}
-        </div>
-      </div>
+      <Grid container>
+        <Grid item xs={12} sm={4} lg={2}>
+          <List
+            ref="list"
+            component="nav"
+            dense
+            className={classes.resultList}
+            subheader={<ListSubheader component="div">Results</ListSubheader>}
+          >
+            {this.props.results.map(item => (
+              <ListItem button key={item.id} selected className={classes.resultItem}>
+                {item.icon &&
+                <Avatar className={classes.resultIcon}>
+                  <SmartIcon path={item.icon} className={styles.icon} />
+                </Avatar>
+                }
+                <ListItemText
+                  className={classes.resultText}
+                  primary={item.title}
+                  secondary={item.description}
+                />
+              </ListItem>
+            ))}
+          </List>
+
+        </Grid>
+        <Grid item xs={12} sm={8} lg={10}>
+          <div className={classes.resultPreview}>
+            {this.renderPreview()}
+          </div>
+        </Grid>
+      </Grid>
     )
   }
 }
 
 ResultsList.propTypes = {
+  classes: PropTypes.object.isRequired,
   results: PropTypes.array,
   selected: PropTypes.number,
   visibleResults: PropTypes.number,
@@ -94,4 +130,4 @@ ResultsList.propTypes = {
   mainInputFocused: PropTypes.bool,
 }
 
-export default ResultsList
+export default withStyles(styles)(ResultsList)

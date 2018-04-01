@@ -1,7 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import styles from './styles.css'
-
+const styles = {
+  statusBar: {}
+}
 const StatusBar = ({ value }) => (
   <div className={styles.statusBar}>{value}</div>
 )

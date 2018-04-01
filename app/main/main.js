@@ -3,12 +3,16 @@ import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 
 import initializePlugins from 'lib/initializePlugins'
-import { on } from 'lib/rpc'
+import { on } from '../lib/rpc'
 import { updateTerm } from './actions/search'
 import config from '../lib/config'
 import store from './store'
 import Cerebro from './components/Cerebro'
 import './css/global.css'
+import {
+  createMuiTheme,
+  MuiThemeProvider,
+} from 'material-ui/styles'
 
 require('fix-path')()
 
@@ -25,13 +29,24 @@ const changeTheme = (src) => {
   document.getElementById('cerebro-theme').href = src
 }
 
+const defaultTheme = createMuiTheme()
+
 // Set theme from config
-changeTheme(config.get('theme'))
+// const themeName = config.get('theme')
+// if (themeName) {
+//   styles = require(themeName)
+// } else {
+//   styles = require("main/themes/light")
+// }
+//
+// changeTheme()
 
 // Render main container
 ReactDOM.render(
   <Provider store={store}>
-    <Cerebro />
+    <MuiThemeProvider theme={defaultTheme}>
+      <Cerebro />
+    </MuiThemeProvider>
   </Provider>,
   document.getElementById('root')
 )

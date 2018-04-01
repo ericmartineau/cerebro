@@ -1,12 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-
-import { InputLabel } from 'material-ui'
-import { FormControl, FormHelperText } from 'material-ui/Form'
 import Hotkey from './Hotkey'
-import countries from './countries'
-
-import loadThemes from 'lib/loadThemes'
 
 class Settings extends Component {
   constructor(props) {
@@ -22,28 +16,32 @@ class Settings extends Component {
       pluginsSettings: get('plugins'),
       trackingEnabled: get('trackingEnabled'),
       crashreportingEnabled: get('crashreportingEnabled'),
-      openAtLogin: get('openAtLogin')
+      openAtLogin: get('openAtLogin'),
     }
     this.changeConfig = this.changeConfig.bind(this)
   }
+
   changeConfig(key, value) {
     this.props.set(key, value)
     this.setState({
-      [key]: value
+      [key]: value,
     })
   }
+
   render() {
-    const { hotkey, showInTray, country, theme, developerMode, cleanOnHide, openAtLogin,
-      trackingEnabled, crashreportingEnabled } = this.state
+    const {
+      hotkey, showInTray, country, theme, developerMode, cleanOnHide, openAtLogin,
+      trackingEnabled, crashreportingEnabled,
+    } = this.state
 
     return (
 
-        <Hotkey
-          hotkey={hotkey}
-          helperText="Type your global shortcut for Cerebro in this input"
-          label="Hotkey"
-          onChange={key => this.changeConfig('hotkey', key)}
-        />
+      <Hotkey
+        hotkey={hotkey}
+        helperText="Type your global shortcut for Cerebro in this input"
+        label="Hotkey"
+        onChange={key => this.changeConfig('hotkey', key)}
+      />
 
     )
   }
@@ -51,7 +49,7 @@ class Settings extends Component {
 
 Settings.propTypes = {
   get: PropTypes.func.isRequired,
-  set: PropTypes.func.isRequired
+  set: PropTypes.func.isRequired,
 }
 
 export default Settings

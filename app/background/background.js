@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import plugins from 'plugins'
+import plugins from 'plugins/core'
 import { on, send } from 'lib/rpc'
 import { settings as pluginSettings, modulesDirectory } from 'lib/plugins'
 

@@ -1,7 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import { Select, Input, Checkbox } from 'material-ui'
+import Select from 'material-ui/Select'
+import Input from 'material-ui/Input'
+import Checkbox from 'material-ui/Checkbox'
 
 const components = {
   bool: Checkbox,

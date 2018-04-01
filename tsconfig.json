@@ -1,0 +1,11 @@
+{
+  "extends": "./node_modules/electron-rebuild/tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react",
+    "baseUrl": ".",
+    "paths": {
+      "*": ["*", "app/*"],
+      "material-dashboard-pro-react/*": ["./node_modules/material-dashboard-pro-react/src/*"]
+    }
+  }
+}

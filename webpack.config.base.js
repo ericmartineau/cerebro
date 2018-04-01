@@ -11,13 +11,23 @@ const externals = Object.assign(
 
 module.exports = {
   module: {
-    rules: [{
-      test: /\.jsx?$/,
-      use: 'babel-loader',
-      exclude: (modulePath) => (
-        modulePath.match(/node_modules/) && !modulePath.match(/node_modules(\/|\\)cerebro-ui/)
+    rules: [
+      {
+        test: /\.ts(x?)$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader?presets[]=es2015&presets[]=react!ts-loader'
+      },
+      {
+        test: /\.js(x?)$/,
+        use: 'babel-loader',
+        exclude: (modulePath) => (
+          modulePath.match(/node_modules/)
+            && !modulePath.match(/node_modules(\/|\\)cerebro-ui/)
+            && !modulePath.match(/node_modules(\/|\\)material-dashboard-pro-react/)
       )
-    }, {
+    },
+
+      {
       test: /\.jpe?g$|\.gif$|\.png$|\.svg$|\.woff$|\.ttf$|\.wav$|\.mp3$/,
       use: ['url-loader']
     }]
@@ -30,10 +40,12 @@ module.exports = {
   resolve: {
     modules: [
       path.join(__dirname, "app"),
-      "node_modules"
+      "node_modules",
+      "node_modules/material-dashboard-pro-react/src"
     ],
-    extensions: ['.js'],
+    extensions: ['.js', '.ts', '.jsx', '.tsx'],
   },
+  mode: 'development',
   plugins: [
     new LodashModuleReplacementPlugin(),
     new webpack.DefinePlugin({
