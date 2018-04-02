@@ -1,4 +1,5 @@
 import { focusableSelector } from 'cerebro-ui'
+import SmartIcon from 'cerebro-ui/SmartIcon'
 import { clipboard, remote } from 'electron'
 import escapeStringRegexp from 'escape-string-regexp'
 /* eslint default-case: 0 */
@@ -8,13 +9,6 @@ import getWindowPosition from 'lib/getWindowPosition'
 
 import { trackEvent } from 'lib/trackEvent'
 import debounce from 'lodash/debounce'
-import SmartIcon from 'cerebro-ui/SmartIcon'
-import Typography from 'material-ui/Typography'
-import Drawer from 'material-ui/Drawer'
-import { ListItemIcon, ListItemText } from 'material-ui/List'
-import { MenuItem, MenuList } from 'material-ui/Menu'
-
-import ListSubheader from 'material-ui/List/ListSubheader'
 
 import {
   INPUT_HEIGHT,
@@ -24,9 +18,15 @@ import {
 } from 'main/constants/ui'
 // import SearchBar from 'material-ui-search-bar'
 import AppBar from 'material-ui/AppBar'
-import Toolbar from 'material-ui/Toolbar'
+import Drawer from 'material-ui/Drawer'
 import Input from 'material-ui/Input'
+import { ListItemIcon, ListItemText } from 'material-ui/List'
+
+import ListSubheader from 'material-ui/List/ListSubheader'
+import { MenuItem, MenuList } from 'material-ui/Menu'
 import { withStyles } from 'material-ui/styles'
+import Toolbar from 'material-ui/Toolbar'
+import Typography from 'material-ui/Typography'
 
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
@@ -42,7 +42,7 @@ import StatusBar from '../StatusBar'
 const styles = theme => ({
   root: {
     flexGrow: 1,
-    height: 430,
+    height: '100vh',
     zIndex: 1,
     overflow: 'hidden',
     position: 'relative',
@@ -56,16 +56,18 @@ const styles = theme => ({
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
+    height: theme.searchBar.height,
   },
   drawerPaper: {
     position: 'relative',
     width: theme.resultList.width,
+    paddingTop: theme.searchBar.height
   },
   content: {
     flexGrow: 1,
     backgroundColor: theme.palette.background.default,
     padding: theme.spacing.unit * 3,
-    minWidth: 0, // So the Typography noWrap works
+    paddingTop: theme.searchBar.height
   },
 })
 
@@ -131,8 +133,8 @@ class Cerebro extends Component {
     this.mainInput = null
 
     this.onWindowResize = debounce(this.onWindowResize, 100).bind(this)
+    this.updateElectronWindow = debounce(this.updateElectronWindow, 16).bind(this)
 
-    this.updateElectronWindow = this.updateElectronWindow.bind(this)
     this.onDocumentKeydown = this.onDocumentKeydown.bind(this)
     this.onKeyDown = this.onKeyDown.bind(this)
     this.onMainInputFocus = this.onMainInputFocus.bind(this)
@@ -202,7 +204,7 @@ class Cerebro extends Component {
       return false
     }
     let visibleResults = Math.floor((window.outerHeight - INPUT_HEIGHT)
-                                    / RESULT_HEIGHT)
+      / RESULT_HEIGHT)
     visibleResults = Math.max(MIN_VISIBLE_RESULTS, visibleResults)
     if (visibleResults !== this.props.visibleResults) {
       this.props.actions.changeVisibleResults(visibleResults)
@@ -395,10 +397,10 @@ class Cerebro extends Component {
     }
 
     const resultHeight = Math.max(Math.min(visibleResults, length),
-                                  MIN_VISIBLE_RESULTS)
+      MIN_VISIBLE_RESULTS)
     const heightWithResults = resultHeight * RESULT_HEIGHT + INPUT_HEIGHT
     const minHeightWithResults = MIN_VISIBLE_RESULTS * RESULT_HEIGHT
-                                 + INPUT_HEIGHT
+      + INPUT_HEIGHT
     win.setMinimumSize(WINDOW_WIDTH, minHeightWithResults)
     win.setSize(width, heightWithResults)
     win.setPosition(...getWindowPosition({ width, heightWithResults }))
@@ -433,75 +435,72 @@ class Cerebro extends Component {
     return (
       <div className={classes.root}>
         {this.renderAutocomplete()}
-        <AppBar color="default" position="absolute" className={classes.appBar}>
+        <AppBar color="default" position="absolute"
+          className={classes.appBar}>
           <Toolbar color="inherit">
             <Input autoFocus
-                   fullWidth
-                   inputRef={this.setInputRef}
-                   onChange={e => this.props.actions.updateTerm(e.target.value)}
-                   placeholder="Cerebro Search"
-                   className={classes.mainInput}
-                   value={this.props.term}
-                   onBlur={this.onMainInputBlur}
-                   onKeyDown={this.onKeyDown}
-                   onFocus={this.onMainInputFocus}
-                   color="inherit"
-                   disableUnderline
+              fullWidth
+              inputRef={this.setInputRef}
+              onChange={e => this.props.actions.updateTerm(
+                e.target.value)}
+              placeholder="Cerebro Search"
+              className={classes.mainInput}
+              value={this.props.term}
+              onBlur={this.onMainInputBlur}
+              onKeyDown={this.onKeyDown}
+              onFocus={this.onMainInputFocus}
+              color="inherit"
+              disableUnderline
             />
           </Toolbar>
         </AppBar>
-        {this.props.results.length > 0
-         && <Drawer
-           variant="permanent"
-           classes={{
-             paper: classes.drawerPaper,
-           }}
-         >
-           <div className={classes.toolbar} />
-           <MenuList
-             ref="list"
-             dense
-             className={classes.list}
-             subheader={<ListSubheader component="div">Results</ListSubheader>}
-           >
-             {this.props.results.map(item => (
-               <MenuItem
-                 className={classes.menuItem}
-                 button
-                 onSelect={this.selectItem}
-                 key={item.id}
-               >
-                 {item.icon &&
-                  <ListItemIcon className={classes.icon}>
-                    <SmartIcon path={item.icon} />
-                  </ListItemIcon>
-                 }
-                 <ListItemText
-                   inset
-                   classes={{ primary: classes.primary }}
-                   primary={item.title}
-                   secondary={item.description}
-                 />
-               </MenuItem>
-             ))}
-           </MenuList>
-         </Drawer>
-        }
+        <Drawer
+            variant="permanent"
+            classes={{
+              paper: classes.drawerPaper
+            }}
+          >
+          <div className={classes.toolbar} />
+          <MenuList
+            ref="list"
+            dense
+            className={classes.list}
+            subheader={<ListSubheader
+              component="div">Results</ListSubheader>}
+          >
+            {this.props.results.map(item => (
+              <MenuItem
+                className={classes.menuItem}
+                button
+                onSelect={this.selectItem}
+                key={item.id}
+              >
+                {item.icon &&
+                <ListItemIcon className={classes.icon}>
+                  <SmartIcon path={item.icon} />
+                </ListItemIcon>
+                }
+                <ListItemText
+                  inset
+                  classes={{ primary: classes.primary }}
+                  primary={item.title}
+                  secondary={item.description}
+                />
+              </MenuItem>
+            ))}
+          </MenuList>
+        </Drawer>
+        <main className={classes.content}>
+          <div className={classes.toolbar} />
+          {this.props.results.length > 0
+          && this.renderPreview()}
 
-        {this.props.results.length > 0 &&
-         <main className={classes.content}>
-           <div className={classes.toolbar} />
-           <Typography noWrap>
-             {'You think water moves fast? You should see ice.'}
-           </Typography>
-           {this.renderPreview()}
-         </main>
-        }
-
+          {this.props.results.length === 0
+          && <Typography><h3>Select a result</h3></Typography>}
+        </main>
         {this.props.statusBarText
-         && <StatusBar value={this.props.statusBarText} />}
+        && <StatusBar value={this.props.statusBarText} />}
       </div>
-
     )
   }
 

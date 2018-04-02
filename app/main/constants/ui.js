@@ -5,7 +5,7 @@ export const INPUT_HEIGHT = 69
 export const RESULT_HEIGHT = 45
 
 // Width of main window
-export const WINDOW_WIDTH = 650
+export const WINDOW_WIDTH = 850
 
 // Maximum results that would be rendered
 export const MAX_RESULTS = 25

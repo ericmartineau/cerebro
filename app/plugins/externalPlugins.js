@@ -1,16 +1,22 @@
-import debounce from 'lodash/debounce'
+import LegacyCerebroPlugin from '../../cerebro/LegacyCerebroPlugin'
 import chokidar from 'chokidar'
-import path from 'path'
 import { initializePlugin } from 'lib/initializePlugins'
-import { modulesDirectory, ensureFiles, settings } from 'lib/plugins'
+import { ensureFiles, modulesDirectory, settings } from 'lib/plugins'
+import debounce from 'lodash/debounce'
+import path from 'path'
 
-const requirePlugin = (pluginPath) => {
+const requirePlugin = (base, pluginPath) => {
   try {
-    let plugin = window.require(pluginPath)
+    const required = window.require(pluginPath)
+    let plugin
     // Fallback for plugins with structure like `{default: {fn: ...}}`
-    const keys = Object.keys(plugin)
-    if (keys.length === 1 && keys[0] === 'default') {
-      plugin = plugin.default
+    const keys = Object.keys(required)
+    if (required.pluginVersion) { // Declared using the versioned module
+      plugin = required
+    } else {
+      const pluginDecl = (keys.length === 1 && keys[0] === 'default') ?
+                         required.default : require
+      plugin = new LegacyCerebroPlugin(base, '', pluginDecl)
     }
     return plugin
   } catch (error) {
@@ -28,10 +34,10 @@ const requirePlugin = (pluginPath) => {
  */
 const isPluginValid = (plugin) => (
   plugin &&
-    // Check existing of main plugin function
-    typeof plugin.fn === 'function' &&
-    // Check that plugin function accepts 0 or 1 argument
-    plugin.fn.length <= 1
+  // Check existing of main plugin function
+  typeof plugin.fn === 'function' &&
+  // Check that plugin function accepts 0 or 1 argument
+  plugin.fn.length <= 1
 )
 
 ensureFiles()
@@ -59,7 +65,7 @@ pluginsWatcher.on('addDir', (pluginPath) => {
   setTimeout(() => {
     console.group(`Load plugin: ${base}`)
     console.log(`Path: ${pluginPath}...`)
-    const plugin = requirePlugin(pluginPath)
+    const plugin = requirePlugin(base, pluginPath)
     if (!isPluginValid(plugin)) {
       console.log('Plugin is not valid, skipped')
       console.groupEnd()
@@ -77,7 +83,7 @@ pluginsWatcher.on('addDir', (pluginPath) => {
     watcher.on('change', debounce(() => {
       console.log(`[${base}] Update plugin`)
       delete window.require.cache[requirePath]
-      plugins[base] = window.require(pluginPath)
+      plugins[plugin.id] = requirePlugin(base, pluginPath)
       console.log(`[${base}] Plugin updated`)
     }, 1000))
     plugins[base] = plugin

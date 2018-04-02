@@ -38,7 +38,7 @@ const defaultTheme = createMuiTheme(
       height: 70,
     },
     resultList: {
-      width: 420,
+      width: 250,
     },
   }
 )
