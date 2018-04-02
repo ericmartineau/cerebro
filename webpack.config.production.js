@@ -65,7 +65,7 @@ const config = {
       sourceMap: false
     })
   ],
-
+  mode: 'production',
   target: 'electron-renderer'
 }
 

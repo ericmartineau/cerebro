@@ -34,7 +34,9 @@ export default ({ src, isDev }) => {
     browserWindowOptions.type = 'splash'
   }
 
-  const mainWindow = new BrowserWindow(browserWindowOptions)
+  const mainWindow = new BrowserWindow({...browserWindowOptions,
+                                         transparent: true,
+                                       backgroundColor: 'transparent'})
 
   // Float main window above full-screen apps
   mainWindow.setAlwaysOnTop(true, 'modal-panel')

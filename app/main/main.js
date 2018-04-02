@@ -1,13 +1,13 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
+import { createMuiTheme, MuiThemeProvider } from 'material-ui/styles'
 
 import initializePlugins from 'lib/initializePlugins'
 import { on } from '../lib/rpc'
 import { updateTerm } from './actions/search'
 import store from './store'
 import Cerebro from './components/Cerebro'
-import { createMuiTheme, MuiThemeProvider } from 'material-ui/styles'
 
 require('fix-path')()
 
@@ -20,27 +20,40 @@ global.isBackground = false
  *
  * @param  {String} src Absolute path to new theme css file
  */
-const changeTheme = (theme) => {
+const changeTheme = (src) => {
   document.getElementById('cerebro-theme').href = src
 }
 
 const defaultTheme = createMuiTheme(
   {
     palette: {
+      primary: {
+        light: '#80D8FF',
+        main: '#0288D1',
+        dark: '#01579B',
+        contrastText: '#fff',
+      },
+      secondary: {
+        light: '#FFF8E1',
+        main: '#ffd54f',
+        dark: '#E65100',
+        contrastText: '#000',
+      },
       type: 'dark',
     },
+
     typography: {
       fontFamily: 'Roboto',
       fontWeight: 'light',
     },
+
     searchBar: {
       height: 70,
     },
     resultList: {
       width: 250,
     },
-  }
-)
+  })
 
 // Set theme from config
 // const themeName = config.get('theme')

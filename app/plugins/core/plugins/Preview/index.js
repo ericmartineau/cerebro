@@ -11,6 +11,11 @@ import { trackEvent } from 'lib/trackEvent'
 import * as format from '../format'
 import { client } from 'lib/plugins'
 import plugins from 'plugins'
+import Button from 'material-ui/Button'
+
+import Card, { CardActions, CardContent } from 'material-ui/Card'
+
+import Typography from 'material-ui/Typography'
 
 const isRelative = (src) => !src.match(/^(https?:|data:)/)
 const urlTransform = (repo, src) => {
@@ -39,10 +44,10 @@ class Preview extends Component {
     return () => {
       this.setState({ runningAction })
       trackEvent({
-        category: 'Plugins',
-        event: runningAction,
-        label: plugin
-      })
+                   category: 'Plugins',
+                   event: runningAction,
+                   label: plugin,
+                 })
       client[runningAction](plugin)
     }
   }
@@ -72,67 +77,85 @@ class Preview extends Component {
       isInstalled,
       isDebugging,
       installedVersion,
-      isUpdateAvailable
+      isUpdateAvailable,
     } = this.props
     const githubRepo = repo && repo.match(/^.+github.com\/([^\/]+\/[^\/]+).*?/)
     const { runningAction, showSettings } = this.state
     const settings = plugins[name] ? plugins[name].settings : null
     return (
+
       <div className={styles.preview} key={name}>
-        <h2>{format.name(name)} ({version})</h2>
-        <p>{format.description(description)}</p>
-        <KeyboardNav>
-          <div className={styles.header}>
-            {
-              settings &&
-                <KeyboardNavItem
-                  onSelect={() => this.setState({ showSettings: !this.state.showSettings })}
-                >
-                  Settings
-                </KeyboardNavItem>
-            }
-            {showSettings && <Settings name={name} settings={settings} />}
-            {
-              !isInstalled && !isDebugging &&
-                <ActionButton
-                  action={this.pluginAction(name, 'install')}
-                  text={runningAction === 'install' ? 'Installing...' : 'Install'}
-                  onComplete={this.onComplete}
-                />
-            }
-            {
-              isInstalled &&
-                <ActionButton
-                  action={this.pluginAction(name, 'uninstall')}
-                  text={runningAction === 'uninstall' ? 'Uninstalling...' : 'Uninstall'}
-                  onComplete={this.onComplete}
-                />
-            }
-            {
-              isUpdateAvailable &&
-                <ActionButton
-                  action={this.pluginAction(name, 'update')}
-                  text={
-                    runningAction === 'update'
+        <Card raised>
+          <CardContent>
+            <Typography variant="headline">{format.name(
+              name)} ({version})</Typography>
+            <Typography component="title">{format.description(
+              description)}</Typography>
+            {/*{this.state.showDescription && this.renderDescription(githubRepo[1])}*/}
+
+
+          </CardContent>
+
+          <CardActions>
+            <KeyboardNav>
+              <div className={styles.header}>
+                {
+                  settings &&
+                  <Button
+                    onSelect={() => this.setState(
+                      { showSettings: !this.state.showSettings })}
+                  >
+                    Settings
+                  </Button>
+                }
+                {showSettings && <Settings name={name} settings={settings} />}
+                {
+                  !isInstalled && !isDebugging &&
+                  <Button
+                    action={this.pluginAction(name, 'install')}
+                    text={runningAction === 'install'
+                          ? 'Installing...'
+                          : 'Install'}
+                    onComplete={this.onComplete}
+                  >Install</Button>
+                }
+                {
+                  isInstalled &&
+                  <Button
+                    action={this.pluginAction(name, 'uninstall')}
+                    text={runningAction === 'uninstall'
+                          ? 'Uninstalling...'
+                          : 'Uninstall'}
+                    onComplete={this.onComplete}
+                  >Uninstall</Button>
+                }
+                {
+                  isUpdateAvailable &&
+                  <Button
+                    action={this.pluginAction(name, 'update')}
+                    text={
+                      runningAction === 'update'
                       ? 'Updating...'
                       : `Update (${installedVersion} → ${version})`
-                  }
-                  onComplete={this.onComplete}
-                />
-            }
-            {
-              githubRepo &&
-                <KeyboardNavItem
-                  onSelect={() => this.setState({ showDescription: !this.state.showDescription })}
-                >
-                  Details
-                </KeyboardNavItem>
-            }
-          </div>
-        </KeyboardNav>
-        {this.state.showDescription && this.renderDescription(githubRepo[1])}
-      </div>
-    )
+                    }
+                    onComplete={this.onComplete}
+                  >Update</Button>
+                }
+                {
+                  githubRepo &&
+                  <Button
+                    onSelect={() => this.setState(
+                      { showDescription: !this.state.showDescription })}
+                  >
+                    Details
+                  </Button>
+                }
+              </div>
+            </KeyboardNav>
+          </CardActions>
+      </Card>
+  </div>
+  )
   }
 }
 

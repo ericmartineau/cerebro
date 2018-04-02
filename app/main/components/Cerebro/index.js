@@ -24,6 +24,9 @@ import { ListItemIcon, ListItemText } from 'material-ui/List'
 
 import ListSubheader from 'material-ui/List/ListSubheader'
 import { MenuItem, MenuList } from 'material-ui/Menu'
+import Grid from 'material-ui/Grid'
+import Card from 'material-ui/Card'
+
 import { withStyles } from 'material-ui/styles'
 import Toolbar from 'material-ui/Toolbar'
 import Typography from 'material-ui/Typography'
@@ -57,18 +60,33 @@ const styles = theme => ({
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
     height: theme.searchBar.height,
+    background: theme.palette.primary
   },
   drawerPaper: {
     position: 'relative',
     width: theme.resultList.width,
     paddingTop: theme.searchBar.height
   },
+  selected: {
+    background: theme.palette.primary,
+  },
+  preview: theme.mixins.gutters(
+    {
+      paddingBottom: 16,
+      marginTop: theme.spacing.unit * 3,
+    }),
   content: {
     flexGrow: 1,
     backgroundColor: theme.palette.background.default,
     padding: theme.spacing.unit * 3,
-    paddingTop: theme.searchBar.height
+    paddingTop: theme.searchBar.height,
+    fontFamily: theme.typography.fontFamily,
+    color: theme.palette.text.default,
+    fontWeight: theme.typography.fontWeight
   },
+  previewCard: {
+    background: theme.palette.background
+  }
 })
 
 const SHOW_EVENT = {
@@ -133,7 +151,8 @@ class Cerebro extends Component {
     this.mainInput = null
 
     this.onWindowResize = debounce(this.onWindowResize, 100).bind(this)
-    this.updateElectronWindow = debounce(this.updateElectronWindow, 16).bind(this)
+    this.updateElectronWindow = this.updateElectronWindow.bind(this)
+    // this.updateElectronWindow = debounce(this.updateElectronWindow, 100).bind(this)
 
     this.onDocumentKeydown = this.onDocumentKeydown.bind(this)
     this.onKeyDown = this.onKeyDown.bind(this)
@@ -393,17 +412,23 @@ class Cerebro extends Component {
       win.setMinimumSize(WINDOW_WIDTH, INPUT_HEIGHT)
       win.setSize(width, INPUT_HEIGHT)
       win.setPosition(...getWindowPosition({ width }))
-      return
+    } else {
+      const resultHeight = MIN_VISIBLE_RESULTS
+      const heightWithResults = resultHeight * RESULT_HEIGHT + INPUT_HEIGHT
+      const minHeightWithResults = MIN_VISIBLE_RESULTS * RESULT_HEIGHT
+                                   + INPUT_HEIGHT
+      win.setMinimumSize(WINDOW_WIDTH, minHeightWithResults)
+      win.setSize(width, heightWithResults)
+      //win.setPosition(...getWindowPosition({ width, heightWithResults }))
     }
-
-    const resultHeight = Math.max(Math.min(visibleResults, length),
-      MIN_VISIBLE_RESULTS)
-    const heightWithResults = resultHeight * RESULT_HEIGHT + INPUT_HEIGHT
-    const minHeightWithResults = MIN_VISIBLE_RESULTS * RESULT_HEIGHT
-      + INPUT_HEIGHT
-    win.setMinimumSize(WINDOW_WIDTH, minHeightWithResults)
-    win.setSize(width, heightWithResults)
-    win.setPosition(...getWindowPosition({ width, heightWithResults }))
+    // const resultHeight = Math.max(Math.min(visibleResults, length),
+    //   MIN_VISIBLE_RESULTS)
+    // const heightWithResults = resultHeight * RESULT_HEIGHT + INPUT_HEIGHT
+    // const minHeightWithResults = MIN_VISIBLE_RESULTS * RESULT_HEIGHT
+    //   + INPUT_HEIGHT
+    // win.setMinimumSize(WINDOW_WIDTH, minHeightWithResults)
+    // win.setSize(width, heightWithResults)
+    // win.setPosition(...getWindowPosition({ width, heightWithResults }))
   }
 
   autocompleteValue() {
@@ -434,7 +459,7 @@ class Cerebro extends Component {
 
     return (
       <div className={classes.root}>
-        {this.renderAutocomplete()}
+        {/*{this.renderAutocomplete()}*/}
         <AppBar color="default" position="absolute"
           className={classes.appBar}>
           <Toolbar color="inherit">
@@ -465,13 +490,12 @@ class Cerebro extends Component {
             ref="list"
             dense
             className={classes.list}
-            subheader={<ListSubheader
-              component="div">Results</ListSubheader>}
           >
-            {this.props.results.map(item => (
+            {this.props.results.map((item, index) => (
               <MenuItem
-                className={classes.menuItem}
+                className={classes.menuItem, classes.selected}
                 button
+                selected={this.props.selected === index}
                 onSelect={this.selectItem}
                 key={item.id}
               >
@@ -490,14 +514,14 @@ class Cerebro extends Component {
             ))}
           </MenuList>
         </Drawer>
-        <main className={classes.content}>
+        <Grid container classes={{typeContainer: classes.content}}>
           <div className={classes.toolbar} />
           {this.props.results.length > 0
           && this.renderPreview()}
 
           {this.props.results.length === 0
-          && <Typography><h3>Select a result</h3></Typography>}
-        </main>
+           && <Card raised classes={{paper: classes.previewCard}}><Typography variant="headline">Select a result</Typography></Card>}
+        </Grid>
         {this.props.statusBarText
         && <StatusBar value={this.props.statusBarText} />}
       </div>
@@ -506,13 +530,14 @@ class Cerebro extends Component {
 
   renderPreview() {
     const selected = this.props.results[this.props.selected]
+    const {classes} = this.props
     if (!selected.getPreview) {
       return null
     }
     const preview = selected.getPreview()
     if (typeof preview === 'string') {
       // Fallback for html previews intead of react component
-      return <div dangerouslySetInnerHTML={{ __html: preview }} />
+      return <Card raised classes={{root: classes.previewCard}}><div dangerouslySetInnerHTML={{ __html: preview }} /></Card>
     }
     return preview
   }
