@@ -7,7 +7,6 @@ import { on } from '../lib/rpc'
 import { updateTerm } from './actions/search'
 import store from './store'
 import Cerebro from './components/Cerebro'
-import './css/global.css'
 import { createMuiTheme, MuiThemeProvider } from 'material-ui/styles'
 
 require('fix-path')()
@@ -21,7 +20,7 @@ global.isBackground = false
  *
  * @param  {String} src Absolute path to new theme css file
  */
-const changeTheme = (src) => {
+const changeTheme = (theme) => {
   document.getElementById('cerebro-theme').href = src
 }
 
